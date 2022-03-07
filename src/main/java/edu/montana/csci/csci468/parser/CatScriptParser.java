@@ -8,6 +8,7 @@ import edu.montana.csci.csci468.tokenizer.TokenList;
 import edu.montana.csci.csci468.tokenizer.TokenType;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static edu.montana.csci.csci468.tokenizer.TokenType.*;
@@ -178,12 +179,55 @@ public class CatScriptParser {
             strExpression.setToken(strToken);
             return  strExpression;
         }
+        else if(tokens.match(TRUE) || tokens.match(FALSE)){
+            Token booleanToken = tokens.consumeToken();
+            BooleanLiteralExpression booleanLiteralExpression;
+            if (booleanToken.getType() == TRUE){
+                booleanLiteralExpression = new BooleanLiteralExpression(true);
+            }
+            else {
+                booleanLiteralExpression = new BooleanLiteralExpression(false);
+            }
+            booleanLiteralExpression.setToken(booleanToken);
+            return booleanLiteralExpression;
+        }
+        else if (tokens.match(IDENTIFIER)) {
+            Token idenToken = tokens.consumeToken();
+            if(tokens.match(LEFT_PAREN)){
+
+                return parseFunctionCall(idenToken);
+            }
+            else{
+                IdentifierExpression identifierExpression = new IdentifierExpression(idenToken.getStringValue());
+                identifierExpression.setToken(idenToken);
+                return identifierExpression;
+            }
+
+        }
         else {
             SyntaxErrorExpression syntaxErrorExpression = new SyntaxErrorExpression(tokens.consumeToken());
             return syntaxErrorExpression;
         }
     }
 
+    private Expression parseFunctionCall(Token token) {
+        List<Expression> exprs = new LinkedList<>();
+        while (!tokens.match(RIGHT_PAREN)) {
+            if (!tokens.hasMoreTokens()) {
+                FunctionCallExpression errList = new FunctionCallExpression(token.getStringValue(), exprs);
+                errList.addError(ErrorType.UNTERMINATED_ARG_LIST);
+                return errList;
+            } else if (tokens.match(COMMA)) {
+                tokens.consumeToken();
+            } else {
+                Expression exp = parseExpression();
+                exprs.add(exp);
+            }
+
+        }
+        tokens.consumeToken();
+        return new FunctionCallExpression(token.getStringValue(), exprs);
+    }
 
 
     private Expression parseListLiteral() {
