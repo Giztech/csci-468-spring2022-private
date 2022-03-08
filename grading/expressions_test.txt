@@ -24,12 +24,12 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running edu.montana.csci.csci468.parser.CatscriptParserExpressionsTest
-[ERROR] Tests run: 29, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.149 s <<< FAILURE! - in edu.montana.csci.csci468.parser.CatscriptParserExpressionsTest
-[ERROR] parseNoArgFunctionCallExpression  Time elapsed: 0.01 s  <<< FAILURE!
+[ERROR] Tests run: 29, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.081 s <<< FAILURE! - in edu.montana.csci.csci468.parser.CatscriptParserExpressionsTest
+[ERROR] parseNoArgFunctionCallExpression  Time elapsed: 0.007 s  <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <0> but was: <1>
 	at edu.montana.csci.csci468.parser.CatscriptParserExpressionsTest.parseNoArgFunctionCallExpression(CatscriptParserExpressionsTest.java:105)
 
-[ERROR] parseEmptyListLiteralExpression  Time elapsed: 0.007 s  <<< ERROR!
+[ERROR] parseEmptyListLiteralExpression  Time elapsed: 0.004 s  <<< ERROR!
 edu.montana.csci.csci468.parser.ParseErrorException: 
 Parse Errors Occurred:
 
@@ -59,8 +59,8 @@ Error: Unexpected Token
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.719 s
-[INFO] Finished at: 2022-03-07T21:40:24-07:00
+[INFO] Total time:  2.079 s
+[INFO] Finished at: 2022-03-08T13:49:33-07:00
 [INFO] ------------------------------------------------------------------------
 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.1:test (default-test) on project csci-468-spring2022: There are test failures.
 [ERROR] 
