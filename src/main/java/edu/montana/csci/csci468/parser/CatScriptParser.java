@@ -59,11 +59,13 @@ public class CatScriptParser {
     //============================================================
 
     private Statement parseProgramStatement() {
-        Statement printStmt = parseStatement();
-        if (printStmt != null) {
-            return printStmt;
+        Statement stmt = parseStatement();
+        if (stmt != null) {
+            return stmt;
         }
         return new SyntaxErrorStatement(tokens.consumeToken());
+
+
     }
 
     private Statement parseStatement() {
@@ -99,6 +101,10 @@ public class CatScriptParser {
             {
                 return stmt;
             }
+            stmt = parseFunctionDeclarationStatement();
+            if(stmt != null){
+                return stmt;
+            }
             if(currentFunctionDefinition != null){
                 stmt = parseReturnStatement();
                 if(stmt != null)
@@ -132,9 +138,8 @@ public class CatScriptParser {
             printStatement.setEnd(require(RIGHT_PAREN, printStatement));
 
             return printStatement;
-        } else {
-            return null;
         }
+            return null;
     }
 
     private Statement parseForStatement() {
@@ -401,6 +406,78 @@ public class CatScriptParser {
         return typeLiteral;
     }
 
+    private Statement parseFunctionDeclarationStatement(){
+        if(tokens.match(FUNCTION)){
+            try {
+                currentFunctionDefinition = new FunctionDefinitionStatement();
+                Token start = tokens.consumeToken();
+                currentFunctionDefinition.setStart(start);
+                Token functionName = require(IDENTIFIER, currentFunctionDefinition);
+                currentFunctionDefinition.setName(functionName.getStringValue());
+                require(LEFT_PAREN, currentFunctionDefinition);
+
+                while (!tokens.match(RIGHT_PAREN)) {
+                    if (tokens.match(EOF)) {
+                        break;
+                    } else {
+                        Token paramToken = tokens.consumeToken();
+                        if (tokens.match(COLON)) {
+                            tokens.consumeToken();
+                            TypeLiteral paramType = parseTypeLiteral();
+                            currentFunctionDefinition.addParameter(paramToken.getStringValue(), paramType);
+                            if(tokens.match(COMMA)) {
+                                tokens.consumeToken();
+                            }
+                        } else {
+                            TypeLiteral objectType = new TypeLiteral();
+                            objectType.setType(CatscriptType.OBJECT);
+                            currentFunctionDefinition.addParameter(paramToken.getStringValue(), objectType);
+                            if (tokens.match(COMMA)) {
+                                tokens.consumeToken();
+                            }
+                        }
+
+                    }
+                }
+                require(RIGHT_PAREN, currentFunctionDefinition);
+                if (tokens.match(COLON)) {
+                    tokens.consumeToken();
+                    TypeLiteral functionType = parseTypeLiteral();
+                    currentFunctionDefinition.setType(functionType);
+
+                } else {
+                    TypeLiteral voidType = new TypeLiteral();
+                    voidType.setType(CatscriptType.VOID);
+                    currentFunctionDefinition.setType(voidType);
+                }
+                require(LEFT_BRACE, currentFunctionDefinition);
+                List<Statement> functionBodyStatements = new LinkedList<>();
+                while (!tokens.match(RIGHT_BRACE)) {
+                    if (tokens.match(EOF)) {
+                        break;
+                    } else {
+                        functionBodyStatements.add(parseFunctionBodyStatement());
+                    }
+                }
+                currentFunctionDefinition.setBody(functionBodyStatements);
+
+                if (tokens.match(EOF)) {
+                    currentFunctionDefinition.addError(ErrorType.UNTERMINATED_ARG_LIST);
+                }
+                currentFunctionDefinition.setEnd(require(RIGHT_BRACE, currentFunctionDefinition));
+                return currentFunctionDefinition;
+            } finally {
+                currentFunctionDefinition = null;
+            }
+        }
+        return null;
+    }
+
+    private Statement parseFunctionBodyStatement(){
+        return parseStatement();
+    }
+
+
     private Statement parseReturnStatement() {
         if (tokens.match(RETURN)){
             ReturnStatement returnStatement = new ReturnStatement();
@@ -591,45 +668,7 @@ public class CatScriptParser {
     }
 
 
-    private Expression parseListLiteral() {
-        if(tokens.match(LEFT_BRACKET)) {
-            Token listStart = tokens.consumeToken();
-            List<Expression> expr = new ArrayList<>();
-            do {
-                Expression expression = parseExpression();
-                expr.add(expression);
-            } while (tokens.matchAndConsume(COMMA));
-            ListLiteralExpression listLiteralExpression = new ListLiteralExpression(expr);
-            listLiteralExpression.setStart(listStart);
-            boolean foundBracket = tokens.match(RIGHT_BRACKET);
-            if(foundBracket) {
-                Token token = tokens.consumeToken();
-                listLiteralExpression.setEnd(token);
-            } else {
-                listLiteralExpression.addError(ErrorType.UNTERMINATED_LIST);
-            }
-            return listLiteralExpression;
-        }
-        return null;
-    }
 
-    private Expression parseParenthesizedExpression() {
-        if(tokens.match(LEFT_PAREN)) {
-            Token parenStart = tokens.consumeToken();
-            Expression innerExpression = parseExpression();
-            ParenthesizedExpression parenExpr = new ParenthesizedExpression(innerExpression);
-            parenExpr.setStart(parenStart);
-            boolean foundRightParen = tokens.match(RIGHT_PAREN);
-            if(foundRightParen) {
-                Token token = tokens.consumeToken();
-                parenExpr.setEnd(token);
-            } else {
-              parenExpr.addError(ErrorType.UNEXPECTED_TOKEN);
-            }
-            return parenExpr;
-        }
-        return null;
-    }
 
 
 
