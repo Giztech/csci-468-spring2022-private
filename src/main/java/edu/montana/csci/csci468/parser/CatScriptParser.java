@@ -668,7 +668,45 @@ public class CatScriptParser {
     }
 
 
+    private Expression parseListLiteral() {
+        if(tokens.match(LEFT_BRACKET)) {
+            Token listStart = tokens.consumeToken();
+            List<Expression> expr = new ArrayList<>();
+            do {
+                Expression expression = parseExpression();
+                expr.add(expression);
+            } while (tokens.matchAndConsume(COMMA));
+            ListLiteralExpression listLiteralExpression = new ListLiteralExpression(expr);
+            listLiteralExpression.setStart(listStart);
+            boolean foundBracket = tokens.match(RIGHT_BRACKET);
+            if(foundBracket) {
+                Token token = tokens.consumeToken();
+                listLiteralExpression.setEnd(token);
+            } else {
+                listLiteralExpression.addError(ErrorType.UNTERMINATED_LIST);
+            }
+            return listLiteralExpression;
+        }
+        return null;
+    }
 
+    private Expression parseParenthesizedExpression() {
+        if(tokens.match(LEFT_PAREN)) {
+            Token parenStart = tokens.consumeToken();
+            Expression innerExpression = parseExpression();
+            ParenthesizedExpression parenExpr = new ParenthesizedExpression(innerExpression);
+            parenExpr.setStart(parenStart);
+            boolean foundRightParen = tokens.match(RIGHT_PAREN);
+            if(foundRightParen) {
+                Token token = tokens.consumeToken();
+                parenExpr.setEnd(token);
+            } else {
+              parenExpr.addError(ErrorType.UNEXPECTED_TOKEN);
+            }
+            return parenExpr;
+        }
+        return null;
+    }
 
 
 
