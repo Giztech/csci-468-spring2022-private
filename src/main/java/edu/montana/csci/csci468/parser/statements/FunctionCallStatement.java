@@ -42,6 +42,6 @@ public class FunctionCallStatement extends Statement {
 
     @Override
     public void compile(ByteCodeGenerator code) {
-        super.compile(code);
+        expression.compile(code);
     }
 }

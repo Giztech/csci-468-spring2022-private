@@ -1,13 +1,18 @@
 package edu.montana.csci.csci468.parser.statements;
 
+
 import edu.montana.csci.csci468.bytecode.ByteCodeGenerator;
 import edu.montana.csci.csci468.eval.CatscriptRuntime;
 import edu.montana.csci.csci468.parser.CatscriptType;
 import edu.montana.csci.csci468.parser.ErrorType;
 import edu.montana.csci.csci468.parser.ParseError;
 import edu.montana.csci.csci468.parser.SymbolTable;
+import edu.montana.csci.csci468.parser.expressions.BooleanLiteralExpression;
 import edu.montana.csci.csci468.parser.expressions.Expression;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Label;
 
+import java.awt.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,6 +96,28 @@ public class IfStatement extends Statement {
 
     @Override
     public void compile(ByteCodeGenerator code) {
-        super.compile(code);
+        expression.compile(code);
+        Label elseLabel = new Label();
+        Label endLabel = new Label();
+
+        if (elseStatements.size() > 0) {
+            code.addJumpInstruction(Opcodes.IFEQ, elseLabel);
+        }else {
+            code.addJumpInstruction(Opcodes.IFEQ, endLabel);
+        }
+        for (Statement trueStatement : trueStatements) {
+            trueStatement.compile(code);
+        }
+
+        code.addJumpInstruction(Opcodes.GOTO, endLabel);
+        if (elseStatements.size() > 0){
+            code.addLabel(elseLabel);
+            for(Statement elseStatement: elseStatements){
+                elseStatement.compile(code);
+            }
+        }
+
+
+        code.addLabel(endLabel);
     }
 }

@@ -8,6 +8,8 @@ import edu.montana.csci.csci468.parser.ParseError;
 import edu.montana.csci.csci468.parser.SymbolTable;
 import edu.montana.csci.csci468.tokenizer.Token;
 import edu.montana.csci.csci468.tokenizer.TokenType;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
 
 public class UnaryExpression extends Expression {
 
@@ -80,7 +82,19 @@ public class UnaryExpression extends Expression {
 
     @Override
     public void compile(ByteCodeGenerator code) {
-        super.compile(code);
+        rightHandSide.compile(code);
+        if (isMinus()) {
+            code.addInstruction(Opcodes.INEG);
+        } else {
+            Label trueLabel = new Label();
+            Label falseLabel = new Label();
+            code.addJumpInstruction(Opcodes.IFNE, trueLabel);
+            code.addInstruction(Opcodes.ICONST_1);
+            code.addJumpInstruction(Opcodes.GOTO, falseLabel);
+            code.addLabel(trueLabel);
+            code.addInstruction(Opcodes.ICONST_0);
+            code.addLabel(falseLabel);
+        }
     }
 
 

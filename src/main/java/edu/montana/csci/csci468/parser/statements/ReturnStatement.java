@@ -58,7 +58,10 @@ public class ReturnStatement extends Statement {
 
     @Override
     public void compile(ByteCodeGenerator code) {
-        super.compile(code);
+        expression.compile(code);
+        if (function.getType().equals(CatscriptType.OBJECT)) {
+            box(code, expression.getType());
+        }
     }
 
 }

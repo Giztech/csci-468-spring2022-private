@@ -7,6 +7,9 @@ import edu.montana.csci.csci468.parser.ErrorType;
 import edu.montana.csci.csci468.parser.ParseError;
 import edu.montana.csci.csci468.parser.SymbolTable;
 import edu.montana.csci.csci468.parser.expressions.Expression;
+import org.objectweb.asm.Opcodes;
+
+import static edu.montana.csci.csci468.bytecode.ByteCodeGenerator.internalNameFor;
 
 public class VariableStatement extends Statement {
     private Expression expression;
@@ -82,6 +85,26 @@ public class VariableStatement extends Statement {
 
     @Override
     public void compile(ByteCodeGenerator code) {
-        super.compile(code);
+        if (isGlobal()) {
+            code.addVarInstruction(Opcodes.ALOAD, 0);
+            expression.compile(code);
+            if (getType() == CatscriptType.INT || getType() == CatscriptType.BOOLEAN) {
+                code.addField(getVariableName(), "I");
+                code.addFieldInstruction(Opcodes.PUTFIELD, getVariableName(), "I", code.getProgramInternalName());
+            } else {
+                code.addField(getVariableName(), "L" + internalNameFor(getType().getJavaType()) + ";");
+                code.addFieldInstruction(Opcodes.PUTFIELD, getVariableName(),
+                        "L" + internalNameFor(getType().getJavaType()) + ";", code.getProgramInternalName());
+            }
+        } else {
+            expression.compile(code);
+            Integer varSlot = code.createLocalStorageSlotFor(getVariableName());
+            if (getType() == CatscriptType.INT || getType() == CatscriptType.BOOLEAN) {
+                code.addVarInstruction(Opcodes.ISTORE, varSlot);
+            } else {
+                code.addVarInstruction(Opcodes.ASTORE, varSlot);
+            }
+
+        }
     }
 }
