@@ -115,6 +115,7 @@ public class CatScriptTokenizer {
                 if (tokenizationEnd()) {
                     tokenList.addToken(ERROR, "Error, unterminated comment", start, position, line, lineOffset);
                 }
+
                 matchAndConsume('/');
             } else {
                 tokenList.addToken(SLASH, "-", start, position, line, lineOffset);
