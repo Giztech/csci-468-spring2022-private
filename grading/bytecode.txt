@@ -716,7 +716,7 @@ public class edu/montana/csci/csci466/bytecode/CatScriptProgram17 extends edu/mo
 
 
  ================================================
-[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.092 s - in edu.montana.csci.csci468.bytecode.CatscriptStatementExecutionTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.099 s - in edu.montana.csci.csci468.bytecode.CatscriptStatementExecutionTest
 [INFO] Running edu.montana.csci.csci468.bytecode.CatscriptBasicExpressionCompileTest
  JVM Bytecode ===================================
 
@@ -2728,7 +2728,7 @@ public class edu/montana/csci/csci466/bytecode/CatScriptProgram71 extends edu/mo
 
 
  ================================================
-[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.03 s - in edu.montana.csci.csci468.bytecode.CatscriptFunctionArgsAndReturnCompileTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s - in edu.montana.csci.csci468.bytecode.CatscriptFunctionArgsAndReturnCompileTest
 [INFO] 
 [INFO] Results:
 [INFO] 
@@ -2737,6 +2737,6 @@ public class edu/montana/csci/csci466/bytecode/CatScriptProgram71 extends edu/mo
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  1.712 s
-[INFO] Finished at: 2022-05-03T17:24:26-06:00
+[INFO] Total time:  1.742 s
+[INFO] Finished at: 2022-05-04T06:30:30-06:00
 [INFO] ------------------------------------------------------------------------
