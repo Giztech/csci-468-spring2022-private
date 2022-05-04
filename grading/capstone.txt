@@ -1,4 +1,1 @@
-Errors:
-
-- Missing source zip
-- Missing mason_medina_portfolio.pdf
+All Good
